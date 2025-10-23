@@ -53,8 +53,11 @@ class UpcomingAnniversaries extends Component
         $members = Member::with('sobrietyDates')->get();
 
         foreach ($members as $member) {
-            foreach ($member->sobrietyDates as $sobrietyDate) {
-                $sobrietyStart = Carbon::parse($sobrietyDate->sobriety_date);
+            // Get the most recent sobriety date for this member
+            $latestSobrietyDate = $member->sobrietyDates->sortByDesc('sobriety_date')->first();
+
+            if ($latestSobrietyDate) {
+                $sobrietyStart = Carbon::parse($latestSobrietyDate->sobriety_date);
 
                 if ($period === 'all' || $period === 'yearly') {
                     // Show yearly anniversaries (1+ years) happening in current month

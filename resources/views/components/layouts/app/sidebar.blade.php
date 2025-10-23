@@ -25,6 +25,10 @@
                     <flux:navlist.item icon="chart-bar" href="{{ route('analytics.statistics') }}" wire:navigate>{{ __('Statistics') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-text" href="{{ route('analytics.reports') }}" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
                 </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Communication')" class="grid">
+                    <flux:navlist.item icon="envelope" href="{{ route('communication.email') }}" :current="request()->routeIs('communication.email')" wire:navigate>{{ __('Email') }}</flux:navlist.item>
+                </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />

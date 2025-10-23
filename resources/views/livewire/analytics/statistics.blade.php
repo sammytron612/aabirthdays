@@ -28,6 +28,15 @@
         </div>
     </div>
 
+    <!-- Sobriety Date Distribution Chart -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Relapse Distribution</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">Percentage of members with single vs multiple sobriety dates</p>
+        <div class="h-80">
+            <canvas id="distributionChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function initializeCharts() {
@@ -167,6 +176,67 @@
                 ctx.fillStyle = '#6b7280';
                 ctx.textAlign = 'center';
                 ctx.fillText('No members with multiple sobriety dates', canvas.width/2, canvas.height/2);
+            }
+
+            // Sobriety Date Distribution Pie Chart
+            const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+            const distributionData = @json($sobrietyDistribution);
+
+            if (distributionData.total_count > 0) {
+                new Chart(distributionCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Single Sobriety Date', 'Multiple Sobriety Dates'],
+                        datasets: [{
+                            data: [distributionData.single_percentage, distributionData.multiple_percentage],
+                            backgroundColor: [
+                                'rgba(34, 197, 94, 0.8)',   // Green for single
+                                'rgba(239, 68, 68, 0.8)'    // Red for multiple
+                            ],
+                            borderColor: [
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(239, 68, 68, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Relapse Percentage',
+                                padding: 20
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label;
+                                        const percentage = context.parsed;
+                                        const count = label.includes('Single') ? distributionData.single_count : distributionData.multiple_count;
+                                        return `${label}: ${percentage}% (${count} members)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Show message if no data
+                const canvas = document.getElementById('distributionChart');
+                const ctx = canvas.getContext('2d');
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#6b7280';
+                ctx.textAlign = 'center';
+                ctx.fillText('No sobriety data available', canvas.width/2, canvas.height/2);
             }
         }
 

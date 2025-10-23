@@ -4,6 +4,7 @@ use App\Livewire\Members\AddMember;
 use App\Livewire\Members\MembersList;
 use App\Livewire\Analytics\Statistics;
 use App\Livewire\Analytics\Reports;
+use App\Livewire\Communication\Email;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -28,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('analytics/statistics', Statistics::class)->name('analytics.statistics');
     Route::get('analytics/reports', Reports::class)->name('analytics.reports');
+
+    Route::get('communication/email', Email::class)->name('communication.email');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');

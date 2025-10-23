@@ -75,12 +75,48 @@ class Statistics extends Component
         return $relapseData;
     }
 
+    public function getSobrietyDateDistribution()
+    {
+        $members = Member::withCount('sobrietyDates')->get();
+        $singleSobrietyCount = 0;
+        $multipleSobrietyCount = 0;
+
+        foreach ($members as $member) {
+            if ($member->sobriety_dates_count == 1) {
+                $singleSobrietyCount++;
+            } elseif ($member->sobriety_dates_count > 1) {
+                $multipleSobrietyCount++;
+            }
+        }
+
+        $totalMembers = $singleSobrietyCount + $multipleSobrietyCount;
+
+        if ($totalMembers == 0) {
+            return [
+                'single_percentage' => 0,
+                'multiple_percentage' => 0,
+                'single_count' => 0,
+                'multiple_count' => 0,
+                'total_count' => 0
+            ];
+        }
+
+        return [
+            'single_percentage' => round(($singleSobrietyCount / $totalMembers) * 100, 1),
+            'multiple_percentage' => round(($multipleSobrietyCount / $totalMembers) * 100, 1),
+            'single_count' => $singleSobrietyCount,
+            'multiple_count' => $multipleSobrietyCount,
+            'total_count' => $totalMembers
+        ];
+    }
+
     public function render()
     {
         return view('livewire.analytics.statistics', [
             'sobrietyDatesByMonth' => $this->getSobrietyDatesByMonth(),
             'longestSobriety' => $this->getLongestSobriety(),
-            'membersWithRelapses' => $this->getMembersWithRelapses()
+            'membersWithRelapses' => $this->getMembersWithRelapses(),
+            'sobrietyDistribution' => $this->getSobrietyDateDistribution()
         ])->layout('components.layouts.app', ['title' => 'Analytics & Statistics']);
     }
 }
