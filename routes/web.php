@@ -1,5 +1,9 @@
 <?php
 
+use App\Livewire\Members\AddMember;
+use App\Livewire\Members\MembersList;
+use App\Livewire\Analytics\Statistics;
+use App\Livewire\Analytics\Reports;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -8,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('home');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -17,6 +21,13 @@ Route::view('dashboard', 'dashboard')
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
+
+    Route::get('members', MembersList::class)->name('members.index');
+    Route::get('members/add', AddMember::class)->name('members.add');
+    Route::get('members/edit/{id}', AddMember::class)->name('members.edit');
+
+    Route::get('analytics/statistics', Statistics::class)->name('analytics.statistics');
+    Route::get('analytics/reports', Reports::class)->name('analytics.reports');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');

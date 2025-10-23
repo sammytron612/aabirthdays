@@ -13,7 +13,18 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Anniversaries') }}</flux:navlist.item>
+                </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Members')" class="grid">
+                    <flux:navlist.item icon="users" :href="route('members.index')" :current="request()->routeIs('members.index')" wire:navigate>{{ __('View Members') }}</flux:navlist.item>
+                    <flux:navlist.item icon="plus" :href="route('members.add')" :current="request()->routeIs('members.add')" wire:navigate>{{ __('Add Member') }}</flux:navlist.item>
+                </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Analytics')" class="grid">
+                    <flux:navlist.item icon="chart-bar" href="{{ route('analytics.statistics') }}" wire:navigate>{{ __('Statistics') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" href="{{ route('analytics.reports') }}" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
+                    <flux:navlist.item icon="light-bulb" href="#" wire:navigate>{{ __('Insights') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
