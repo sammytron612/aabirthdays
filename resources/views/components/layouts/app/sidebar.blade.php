@@ -24,7 +24,6 @@
                 <flux:navlist.group :heading="__('Analytics')" class="grid">
                     <flux:navlist.item icon="chart-bar" href="{{ route('analytics.statistics') }}" wire:navigate>{{ __('Statistics') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-text" href="{{ route('analytics.reports') }}" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
-                    <flux:navlist.item icon="light-bulb" href="#" wire:navigate>{{ __('Insights') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

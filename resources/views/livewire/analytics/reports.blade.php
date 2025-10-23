@@ -45,6 +45,7 @@
                     <flux:label>Month</flux:label>
                     <flux:select wire:model="selectedMonth">
                         <option value="">Select Month</option>
+                        <option value="all">All Members</option>
                         @foreach($monthOptions as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
@@ -79,7 +80,11 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    Anniversary & Monthly Milestone Report for {{ \Carbon\Carbon::create()->month((int)$selectedMonth)->format('F') }}
+                    @if($selectedMonth === 'all')
+                        Anniversary & Monthly Milestone Report - All Members
+                    @else
+                        Anniversary & Monthly Milestone Report for {{ \Carbon\Carbon::create()->month((int)$selectedMonth)->format('F') }}
+                    @endif
                 </h2>
                 <div class="flex space-x-2">
                     <flux:button wire:click="downloadReport" variant="outline" size="sm">
@@ -111,9 +116,6 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Years
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Anniversary
-                                </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -133,9 +135,6 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ round($anniversaryData['sobriety_date']->daysSober() / 365.25, 2) }} years
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $anniversaryData['anniversary_display'] }}
                                     </td>
                                 </tr>
                             @endforeach

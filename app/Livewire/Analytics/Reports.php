@@ -35,33 +35,22 @@ class Reports extends Component
             foreach ($member->sobrietyDates as $sobrietyDate) {
                 $sobrietyStart = Carbon::parse($sobrietyDate->sobriety_date);
 
-                // Only show members who have their sobriety anniversary in the selected month
-                if ($sobrietyStart->month == (int)$this->selectedMonth) {
-                    $now = Carbon::now();
+                // Check if we should include this member
+                $shouldInclude = false;
 
-                    // Calculate how long they've been sober as of today
-                    $totalMonthsSober = floor($sobrietyStart->diffInMonths($now));
-                    $totalYearsSober = intval($totalMonthsSober / 12);
+                if ($this->selectedMonth === 'all') {
+                    // Include all members regardless of month
+                    $shouldInclude = true;
+                } else {
+                    // Only show members who have their sobriety anniversary in the selected month
+                    $shouldInclude = ($sobrietyStart->month == (int)$this->selectedMonth);
+                }
 
-                    if ($totalYearsSober >= 1) {
-                        // They have at least 1 year of sobriety
-                        $this->reportData->push([
-                            'member' => $member,
-                            'sobriety_date' => $sobrietyDate,
-                            'anniversary_type' => 'yearly',
-                            'anniversary_number' => $totalYearsSober,
-                            'anniversary_display' => $totalYearsSober . ' ' . ($totalYearsSober == 1 ? 'Year' : 'Years')
-                        ]);
-                    } else {
-                        // Less than 1 year of sobriety
-                        $this->reportData->push([
-                            'member' => $member,
-                            'sobriety_date' => $sobrietyDate,
-                            'anniversary_type' => 'monthly',
-                            'anniversary_number' => $totalMonthsSober,
-                            'anniversary_display' => $totalMonthsSober . ' ' . ($totalMonthsSober == 1 ? 'Month' : 'Months')
-                        ]);
-                    }
+                if ($shouldInclude) {
+                    $this->reportData->push([
+                        'member' => $member,
+                        'sobriety_date' => $sobrietyDate
+                    ]);
                 }
             }
         }
@@ -76,7 +65,11 @@ class Reports extends Component
             $this->generateReport();
         }
 
-        $monthName = Carbon::create()->month((int)$this->selectedMonth)->format('F');
+        if ($this->selectedMonth === 'all') {
+            $monthName = 'All_Members';
+        } else {
+            $monthName = Carbon::create()->month((int)$this->selectedMonth)->format('F');
+        }
         $year = $this->selectedYear ?: Carbon::now()->year;
         $filename = "sobriety_anniversaries_{$monthName}_{$year}.csv";
 
@@ -89,7 +82,7 @@ class Reports extends Component
             $file = fopen('php://output', 'w');
 
             // Add CSV headers
-            fputcsv($file, ['Member Name', 'Email', 'Sobriety Date', 'Days Sober', 'Years Sober', 'Anniversary Milestone']);
+            fputcsv($file, ['Member Name', 'Email', 'Sobriety Date', 'Days Sober', 'Years Sober']);
 
             foreach ($this->reportData as $anniversaryData) {
                 $member = $anniversaryData['member'];
@@ -100,8 +93,7 @@ class Reports extends Component
                     $member->email,
                     $sobrietyDate->sobriety_date,
                     $sobrietyDate->daysSober(),
-                    round($sobrietyDate->daysSober() / 365.25, 2),
-                    $anniversaryData['anniversary_display']
+                    round($sobrietyDate->daysSober() / 365.25, 2)
                 ]);
             }
 
