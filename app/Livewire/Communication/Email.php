@@ -251,11 +251,29 @@ class Email extends Component
 
     public function sendEmail()
     {
-        $this->validate([
+        // Basic validation
+        $rules = [
             'subject' => 'required|min:3',
             'message' => 'required|min:10',
             'selectedMembers' => 'required|array|min:1'
-        ]);
+        ];
+
+        $messages = [
+            'subject.required' => 'The email subject is required.',
+            'subject.min' => 'The email subject must be at least 3 characters.',
+            'message.required' => 'The email message is required.',
+            'message.min' => 'The email message must be at least 10 characters.',
+            'selectedMembers.required' => 'At least one recipient must be selected.',
+            'partyDateTime.required' => 'Party date and time is required for special celebrations.',
+            'partyDateTime.min' => 'Please provide a more detailed date and time for the party.'
+        ];
+
+        // If there's a special celebration, require party date/time
+        if (strpos($this->message, 'SPECIAL CELEBRATION') !== false) {
+            $rules['partyDateTime'] = 'required|min:5';
+        }
+
+        $this->validate($rules, $messages);
 
         // Get admin users as primary recipients (TO)
         $adminUsers = User::all();
