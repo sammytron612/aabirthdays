@@ -38,11 +38,11 @@
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Click to use</div>
                 </button>
 
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-center opacity-50">
+                <button wire:click="useTemplate('custom')" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg p-4 text-center transition-colors">
                     <div class="text-2xl mb-2">📧</div>
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">Template 2</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Coming Soon</div>
-                </div>
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">Custom Message</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Click to use</div>
+                </button>
 
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-center opacity-50">
                     <div class="text-2xl mb-2">✉️</div>
@@ -98,10 +98,49 @@
                     </div>
                 @endif
 
+                <!-- Custom Message Editor (only show for custom messages) -->
+                @if(strpos($subject, 'Message from AA Birthdays Team') !== false)
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
+                        <div class="flex items-center mb-3">
+                            <span class="text-blue-800 dark:text-blue-200 font-medium">📝 Edit Your Message</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Subject:
+                                </label>
+                                <input
+                                    type="text"
+                                    wire:model.live="subject"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('subject') border-red-500 @enderror"
+                                >
+                                @error('subject')
+                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Message:
+                                </label>
+                                <textarea
+                                    wire:model.live="message"
+                                    rows="8"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('message') border-red-500 @enderror"
+                                    placeholder="Enter your message content here..."
+                                ></textarea>
+                                @error('message')
+                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="prose dark:prose-invert max-w-none">
                     <div class="whitespace-pre-wrap text-gray-900 dark:text-white">{{ $message }}</div>
                 </div>
-            </div>            <!-- Recipients Summary -->
+            </div>
+            <!-- Recipients Summary -->
             <div class="mb-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">
                     Primary Recipients - Admin Users ({{ count($selectedMembersData) }})
@@ -256,6 +295,56 @@
                                 📧 Create Email
                             </flux:button>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Custom Message Modal -->
+    @if($showCustomMessageModal)
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Custom Message Template
+                        </h3>
+                        <button wire:click="closeCustomMessageModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="px-6 py-4">
+                    <div class="text-center py-8">
+                        <div class="text-6xl mb-4">📧</div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Create Custom Message</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">
+                            Send a custom message to all members. You'll be able to edit the subject and content before sending.
+                        </p>
+
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+                            <div class="text-sm text-blue-800 dark:text-blue-200">
+                                <strong>Recipients:</strong> Admin users will receive the email directly, and all members will be BCC'd.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-end space-x-3">
+                        <flux:button wire:click="closeCustomMessageModal" variant="outline">
+                            Cancel
+                        </flux:button>
+                        <flux:button wire:click="createCustomEmail" variant="primary">
+                            📝 Create Email
+                        </flux:button>
                     </div>
                 </div>
             </div>

@@ -32,8 +32,11 @@ class Reports extends Component
         $this->reportData = collect();
 
         foreach ($allMembers as $member) {
-            foreach ($member->sobrietyDates as $sobrietyDate) {
-                $sobrietyStart = Carbon::parse($sobrietyDate->sobriety_date);
+            // Get the most recent sobriety date for this member
+            $mostRecentSobrietyDate = $member->sobrietyDates()->orderByDesc('sobriety_date')->first();
+
+            if ($mostRecentSobrietyDate) {
+                $sobrietyStart = Carbon::parse($mostRecentSobrietyDate->sobriety_date);
 
                 // Check if we should include this member
                 $shouldInclude = false;
@@ -49,7 +52,7 @@ class Reports extends Component
                 if ($shouldInclude) {
                     $this->reportData->push([
                         'member' => $member,
-                        'sobriety_date' => $sobrietyDate
+                        'sobriety_date' => $mostRecentSobrietyDate
                     ]);
                 }
             }

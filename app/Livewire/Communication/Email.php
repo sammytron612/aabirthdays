@@ -17,6 +17,7 @@ class Email extends Component
     public $selectAll = false;
     public $showPreview = false;
     public $showAnniversariesModal = false;
+    public $showCustomMessageModal = false;
     public $partyDateTime = '';
 
     public function toggleSelectAll()
@@ -40,6 +41,10 @@ class Email extends Component
                 $this->showAnniversariesModal = true;
                 break;
 
+            case 'custom':
+                $this->showCustomMessageModal = true;
+                break;
+
             default:
                 // Future templates can be added here
                 break;
@@ -49,6 +54,30 @@ class Email extends Component
     public function closeAnniversariesModal()
     {
         $this->showAnniversariesModal = false;
+    }
+
+    public function closeCustomMessageModal()
+    {
+        $this->showCustomMessageModal = false;
+    }
+
+    public function createCustomEmail()
+    {
+        // Pre-fill email with basic template
+        $this->subject = 'Message from AA Birthdays Team - ' . \Carbon\Carbon::now()->format('F Y');
+
+        $this->message = "Dear Members,\n\n";
+        $this->message .= "We hope this message finds you well.\n\n";
+        $this->message .= "[Your message content here]\n\n";
+        $this->message .= "Best regards";
+
+        // Set admin users as recipients
+        $this->selectedMembers = User::pluck('id')->toArray();
+        $this->selectAll = false;
+
+        // Close modal and show preview
+        $this->showCustomMessageModal = false;
+        $this->showPreview = true;
     }
 
     public function getAnniversariesData()

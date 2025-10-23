@@ -19,14 +19,23 @@ class MembersList extends Component
     public $search = '';
     public $sortBy = 'upcoming_anniversary';
     public $sortDirection = 'asc';
+    public $showDisabled = true;
+
+    // Edit modal properties
+    public $showEditModal = false;
+    public $editingMember = null;
+    public $name = '';
+    public $email = '';
+    public $disabled = false;
+    public $sobrietyDates = [];
+    public $newSobrietyDate = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
         'sortBy' => ['except' => 'upcoming_anniversary'],
         'sortDirection' => ['except' => 'asc'],
-    ];
-
-    public function updatingSearch()
+        'showDisabled' => ['except' => true],
+    ];    public function updatingSearch()
     {
         $this->resetPage();
     }
@@ -61,10 +70,117 @@ class MembersList extends Component
         return $anniversaryThisYear;
     }
 
+    public function openEditModal($memberId)
+    {
+        $this->editingMember = Member::findOrFail($memberId);
+        $this->name = $this->editingMember->name;
+        $this->email = $this->editingMember->email;
+        $this->disabled = $this->editingMember->disabled ?? false;
+
+        // Load all sobriety dates ordered by date descending (most recent first)
+        $this->sobrietyDates = $this->editingMember->sobrietyDates()->orderByDesc('sobriety_date')->get()->map(function($date) {
+            return [
+                'id' => $date->id,
+                'sobriety_date' => $date->sobriety_date->format('Y-m-d'),
+            ];
+        })->toArray();
+
+        $this->showEditModal = true;
+    }
+
+    public function closeEditModal()
+    {
+        $this->showEditModal = false;
+        $this->editingMember = null;
+        $this->name = '';
+        $this->email = '';
+        $this->disabled = false;
+        $this->sobrietyDates = [];
+        $this->newSobrietyDate = '';
+    }
+
+    public function saveEditedMember()
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:members,email,' . $this->editingMember->id,
+        ]);
+
+        $this->editingMember->update([
+            'name' => $this->name,
+            'email' => $this->email,
+            'disabled' => $this->disabled,
+        ]);
+
+        // Handle multiple sobriety dates
+        if (!empty($this->sobrietyDates)) {
+            // Get existing sobriety date IDs
+            $existingIds = collect($this->sobrietyDates)->pluck('id')->filter()->toArray();
+
+            // Delete sobriety dates that are no longer in the list
+            $this->editingMember->sobrietyDates()->whereNotIn('id', $existingIds)->delete();
+
+            // Update or create sobriety dates
+            foreach ($this->sobrietyDates as $sobrietyData) {
+                if ($sobrietyData['id']) {
+                    // Update existing
+                    $this->editingMember->sobrietyDates()->where('id', $sobrietyData['id'])->update([
+                        'sobriety_date' => $sobrietyData['sobriety_date'],
+                    ]);
+                } else {
+                    // Create new
+                    $this->editingMember->sobrietyDates()->create([
+                        'sobriety_date' => $sobrietyData['sobriety_date'],
+                    ]);
+                }
+            }
+        }
+
+        session()->flash('message', 'Member updated successfully.');
+        $this->closeEditModal();
+    }
+
+    public function toggleMemberStatus()
+    {
+        $this->disabled = !$this->disabled;
+    }
+
+    public function addSobrietyDate()
+    {
+        if (!empty($this->newSobrietyDate)) {
+            // Add to the array for display
+            $this->sobrietyDates[] = [
+                'id' => null, // Will be null for new dates
+                'sobriety_date' => $this->newSobrietyDate,
+            ];
+
+            // Clear the input
+            $this->newSobrietyDate = '';
+
+            // Sort by date descending (most recent first)
+            usort($this->sobrietyDates, function($a, $b) {
+                return strcmp($b['sobriety_date'], $a['sobriety_date']);
+            });
+        }
+    }
+
+    public function removeSobrietyDate($index)
+    {
+        unset($this->sobrietyDates[$index]);
+        $this->sobrietyDates = array_values($this->sobrietyDates); // Re-index array
+    }
+
     public function render()
     {
         $query = Member::with('sobrietyDates')
             ->whereHas('sobrietyDates');
+
+        // Apply disabled filter
+        if (!$this->showDisabled) {
+            $query->where(function($q) {
+                $q->where('disabled', false)->orWhereNull('disabled');
+            });
+        }
 
         // Apply search filter
         if ($this->search) {
