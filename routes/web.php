@@ -6,6 +6,7 @@ use App\Livewire\Analytics\Statistics;
 use App\Livewire\Analytics\Reports;
 use App\Livewire\Communication\Email;
 use App\Livewire\Settings\Appearance;
+use App\Livewire\Settings\DataManagement;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
@@ -35,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');
     Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
+    Route::get('settings/data-management', DataManagement::class)->name('settings.data-management');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
