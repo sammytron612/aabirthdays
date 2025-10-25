@@ -184,7 +184,7 @@
     @else
         <div class="text-center py-12">
             <div class="text-gray-500 dark:text-gray-400 mb-2">
-                <div class="text-6xl mb-4">🎂</div>
+
             </div>
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">No anniversaries this month</h3>
             <p class="text-gray-500 dark:text-gray-400">

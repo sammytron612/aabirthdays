@@ -208,9 +208,9 @@
     <!-- Edit Member Modal -->
     @if($showEditModal)
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
                 <!-- Modal Header -->
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                     <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ __('Edit Member') }}
@@ -223,124 +223,128 @@
                     </div>
                 </div>
 
-                <!-- Modal Content -->
-                <div class="p-6">
-                    <form wire:submit.prevent="saveEditedMember" class="space-y-4">
-                        <!-- Name -->
-                        <div>
-                            <flux:input
-                                wire:model="name"
-                                label="{{ __('Name') }}"
-                                placeholder="{{ __('Enter member name') }}"
-                                required
-                            />
-                            @error('name')
-                                <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Email -->
-                        <div>
-                            <flux:input
-                                wire:model="email"
-                                type="email"
-                                label="{{ __('Email') }}"
-                                placeholder="{{ __('Enter email address') }}"
-                                required
-                            />
-                            @error('email')
-                                <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Member Status -->
-                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-700 rounded-lg">
+                <!-- Modal Content - Scrollable -->
+                <div class="flex-1 overflow-y-auto">
+                    <form wire:submit.prevent="saveEditedMember" class="flex flex-col h-full">
+                        <div class="p-6 space-y-4 flex-1">
+                            <!-- Name -->
                             <div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                    {{ __('Member Status') }}
-                                </div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $disabled ? __('Member is currently disabled') : __('Member is active') }}
-                                </div>
-                            </div>
-                            <flux:button
-                                wire:click="toggleMemberStatus"
-                                :variant="$disabled ? 'primary' : 'danger'"
-                                size="sm"
-                                type="button"
-                            >
-                                {{ $disabled ? __('Enable Member') : __('Disable Member') }}
-                            </flux:button>
-                        </div>
-
-                        <!-- Sobriety Dates Section -->
-                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                                {{ __('Sobriety Dates') }}
-                            </h4>
-
-                            <!-- Existing Sobriety Dates -->
-                            @if(!empty($sobrietyDates))
-                                <div class="space-y-3 mb-4">
-                                    @foreach($sobrietyDates as $index => $sobrietyData)
-                                        <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-zinc-700 rounded-lg">
-                                            <input
-                                                type="date"
-                                                wire:model="sobrietyDates.{{ $index }}.sobriety_date"
-                                                class="flex-1 rounded-md border-gray-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            />
-                                            <button
-                                                type="button"
-                                                wire:click="removeSobrietyDate({{ $index }})"
-                                                class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                                            >
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-
-                            <!-- Add New Sobriety Date -->
-                            <div class="flex items-center space-x-3">
-                                <input
-                                    type="date"
-                                    wire:model="newSobrietyDate"
-                                    placeholder="{{ __('Select new sobriety date') }}"
-                                    class="flex-1 rounded-md border-gray-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                <flux:input
+                                    wire:model="name"
+                                    label="{{ __('Name') }}"
+                                    placeholder="{{ __('Enter member name') }}"
+                                    required
                                 />
+                                @error('name')
+                                    <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <flux:input
+                                    wire:model="email"
+                                    type="email"
+                                    label="{{ __('Email') }}"
+                                    placeholder="{{ __('Enter email address') }}"
+                                    required
+                                />
+                                @error('email')
+                                    <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Member Status -->
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-700 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ __('Member Status') }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $disabled ? __('Member is currently disabled') : __('Member is active') }}
+                                    </div>
+                                </div>
                                 <flux:button
-                                    wire:click="addSobrietyDate"
-                                    variant="primary"
+                                    wire:click="toggleMemberStatus"
+                                    :variant="$disabled ? 'primary' : 'danger'"
                                     size="sm"
                                     type="button"
                                 >
-                                    {{ __('Add Date') }}
+                                    {{ $disabled ? __('Enable Member') : __('Disable Member') }}
                                 </flux:button>
                             </div>
 
-                            @error('newSobrietyDate')
-                                <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
-                            @enderror
+                            <!-- Sobriety Dates Section -->
+                            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                                    {{ __('Sobriety Dates') }}
+                                </h4>
+
+                                <!-- Existing Sobriety Dates -->
+                                @if(!empty($sobrietyDates))
+                                    <div class="space-y-3 mb-4">
+                                        @foreach($sobrietyDates as $index => $sobrietyData)
+                                            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-zinc-700 rounded-lg">
+                                                <input
+                                                    type="date"
+                                                    wire:model="sobrietyDates.{{ $index }}.sobriety_date"
+                                                    class="flex-1 rounded-md border-gray-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    wire:click="removeSobrietyDate({{ $index }})"
+                                                    class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                                                >
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <!-- Add New Sobriety Date -->
+                                <div class="flex items-center space-x-3">
+                                    <input
+                                        type="date"
+                                        wire:model="newSobrietyDate"
+                                        placeholder="{{ __('Select new sobriety date') }}"
+                                        class="flex-1 rounded-md border-gray-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    />
+                                    <flux:button
+                                        wire:click="addSobrietyDate"
+                                        variant="primary"
+                                        size="sm"
+                                        type="button"
+                                    >
+                                        {{ __('Add Date') }}
+                                    </flux:button>
+                                </div>
+
+                                @error('newSobrietyDate')
+                                    <div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
-                        <!-- Form Actions -->
-                        <div class="flex justify-end space-x-3 pt-4">
-                            <flux:button
-                                wire:click="closeEditModal"
-                                variant="ghost"
-                                type="button"
-                            >
-                                {{ __('Cancel') }}
-                            </flux:button>
-                            <flux:button
-                                type="submit"
-                                variant="primary"
-                            >
-                                {{ __('Save Changes') }}
-                            </flux:button>
+                        <!-- Form Actions - Fixed at bottom -->
+                        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-zinc-800 flex-shrink-0">
+                            <div class="flex justify-end space-x-3">
+                                <flux:button
+                                    wire:click="closeEditModal"
+                                    variant="ghost"
+                                    type="button"
+                                >
+                                    {{ __('Cancel') }}
+                                </flux:button>
+                                <flux:button
+                                    type="submit"
+                                    variant="primary"
+                                >
+                                    {{ __('Save Changes') }}
+                                </flux:button>
+                            </div>
                         </div>
                     </form>
                 </div>
