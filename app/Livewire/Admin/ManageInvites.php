@@ -65,6 +65,25 @@ class ManageInvites extends Component
         $this->validate();
 
         try {
+            // If inviting someone as Birthday Secretary, disable existing birthday secretaries
+            if ($this->role === UserRole::Birthday->value) {
+                $existingBirthdayUsers = User::where('role', UserRole::Birthday)->get();
+                foreach ($existingBirthdayUsers as $user) {
+                    $user->update(['role' => UserRole::Disabled]);
+                }
+
+                if ($existingBirthdayUsers->count() > 0) {
+                    session()->flash('success',
+                        'Invitation sent successfully to ' . $this->email . '. ' .
+                        $existingBirthdayUsers->count() . ' existing Birthday Secretary(s) have been disabled.'
+                    );
+                } else {
+                    session()->flash('success', 'Invitation sent successfully to ' . $this->email);
+                }
+            } else {
+                session()->flash('success', 'Invitation sent successfully to ' . $this->email);
+            }
+
             // Create the invitation
             $invitation = Invitation::createInvitation(
                 $this->email,
@@ -76,8 +95,6 @@ class ManageInvites extends Component
             // Send the invitation email
             Notification::route('mail', $this->email)->notify(new InvitationNotification($invitation));
 
-            session()->flash('success', 'Invitation sent successfully to ' . $this->email);
-
             $this->resetForm();
             $this->hideForm();
 
@@ -86,50 +103,37 @@ class ManageInvites extends Component
         }
     }
 
-    public function deleteUser($userId)
+    public function deleteInvitation($invitationId)
     {
         try {
-            $user = User::findOrFail($userId);
-
-            if ($user->id === auth()->id()) {
-                session()->flash('error', 'You cannot delete your own account.');
-                return;
-            }
-
-            $user->delete();
-            session()->flash('success', 'User deleted successfully.');
+            $invitation = Invitation::findOrFail($invitationId);
+            $invitation->delete();
+            session()->flash('success', 'Invitation deleted successfully.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete user: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete invitation: ' . $e->getMessage());
         }
     }
 
-    public function resendInvite($userId)
+    public function resendInvitation($invitationId)
     {
         try {
-            $user = User::findOrFail($userId);
+            $invitation = Invitation::findOrFail($invitationId);
 
-            // Check if there's a pending invitation for this user
-            $invitation = Invitation::where('email', $user->email)
-                ->where('accepted_at', null)
-                ->first();
-
-            if ($invitation && $invitation->isValid()) {
-                // Resend existing invitation
-                Notification::route('mail', $user->email)->notify(new InvitationNotification($invitation));
-            } else {
-                // Create new invitation for existing user
-                $newInvitation = Invitation::createInvitation(
-                    $user->email,
-                    $user->name,
-                    $user->role,
-                    auth()->id()
-                );
-
-                Notification::route('mail', $user->email)->notify(new InvitationNotification($newInvitation));
+            if (!$invitation->isValid()) {
+                if ($invitation->isExpired()) {
+                    session()->flash('error', 'Cannot resend expired invitation. Please create a new one.');
+                    return;
+                }
+                if ($invitation->isAccepted()) {
+                    session()->flash('error', 'This invitation has already been accepted.');
+                    return;
+                }
             }
 
-            session()->flash('success', 'Invitation resent to ' . $user->email);
+            // Resend the invitation
+            Notification::route('mail', $invitation->email)->notify(new InvitationNotification($invitation));
+            session()->flash('success', 'Invitation resent to ' . $invitation->email);
 
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to resend invitation: ' . $e->getMessage());
@@ -138,10 +142,12 @@ class ManageInvites extends Component
 
     public function render()
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(10);
+        $invitations = Invitation::with('invitedBy')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('livewire.admin.manage-invites', [
-            'users' => $users,
+            'invitations' => $invitations,
             'roleOptions' => UserRole::options()
         ])->layout('components.layouts.app', ['title' => 'Manage Invites']);
     }

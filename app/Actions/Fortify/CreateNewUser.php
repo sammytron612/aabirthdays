@@ -20,6 +20,9 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        // Debug logging
+        \Log::info('CreateNewUser called with input: ', $input);
+
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -56,16 +59,31 @@ class CreateNewUser implements CreatesNewUsers
 
             $role = $invitation->role;
 
+            // If registering as Birthday Secretary, disable existing birthday secretaries
+            if ($role === UserRole::Birthday) {
+                $existingBirthdayUsers = User::where('role', UserRole::Birthday)->get();
+                foreach ($existingBirthdayUsers as $user) {
+                    $user->update(['role' => UserRole::Disabled]);
+                }
+            }
+
             // Mark invitation as accepted
             $invitation->markAsAccepted();
         }
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
             'role' => $role,
             'email_verified_at' => now(), // Auto-verify email for invited users
         ]);
+
+        // Clear invitation session data after successful registration
+        if (isset($input['invitation_token'])) {
+            session()->forget(['invitation_token', 'invitation_email', 'invitation_name', 'invitation_role']);
+        }
+
+        return $user;
     }
 }

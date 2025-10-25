@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'email_verified_at',
     ];
 
     /**
@@ -82,6 +83,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if the user is disabled
+     */
+    public function isDisabled(): bool
+    {
+        return $this->role === UserRole::Disabled;
+    }
+
+    /**
      * Scope to get only admin users
      */
     public function scopeAdmins($query)
@@ -95,5 +104,13 @@ class User extends Authenticatable
     public function scopeBirthday($query)
     {
         return $query->where('role', UserRole::Birthday);
+    }
+
+    /**
+     * Scope to get only disabled users
+     */
+    public function scopeDisabled($query)
+    {
+        return $query->where('role', UserRole::Disabled);
     }
 }

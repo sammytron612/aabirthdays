@@ -6,9 +6,10 @@ enum UserRole: string
 {
     case Admin = 'admin';
     case Birthday = 'birthday';
+    case Disabled = 'disabled';
 
     /**
-     * Get all available roles
+     * Get all available roles (excluding disabled)
      */
     public static function options(): array
     {
@@ -26,6 +27,7 @@ enum UserRole: string
         return match($this) {
             self::Admin => 'Admin',
             self::Birthday => 'Birthday Secretary',
+            self::Disabled => 'Disabled',
         };
     }
 }

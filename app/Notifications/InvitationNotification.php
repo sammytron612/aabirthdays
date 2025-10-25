@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 
-class InvitationNotification extends Notification implements ShouldQueue
+class InvitationNotification extends Notification
 {
     use Queueable;
 
@@ -59,10 +59,6 @@ class InvitationNotification extends Notification implements ShouldQueue
             'invitation_id' => $this->invitation->id,
             'email' => $this->invitation->email,
             'role' => $this->invitation->role->value,
-        ];
-    }
-}
-            //
         ];
     }
 }

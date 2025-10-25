@@ -7,6 +7,30 @@
 
         <!-- Admin Dashboard Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- User Management Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        {{ \App\Models\User::count() }} users
+                    </span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">User Management</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">View and manage system users</p>
+                <button
+                    id="userManagementBtn"
+                    onclick="toggleUserManagement()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    <span id="userManagementBtnText">Manage Users</span>
+                </button>
+            </div>
+
             <!-- Admin Invite Card -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -63,5 +87,28 @@
             </div>
 
         </div>
+
+        <!-- User Management Section -->
+        <div id="userManagementSection" class="hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <livewire:admin.manage-users />
+            </div>
+        </div>
     </div>
+
+    <script>
+        function toggleUserManagement() {
+            const section = document.getElementById('userManagementSection');
+            const btnText = document.getElementById('userManagementBtnText');
+
+            if (section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                section.scrollIntoView({ behavior: 'smooth' });
+                btnText.textContent = 'Hide Users';
+            } else {
+                section.classList.add('hidden');
+                btnText.textContent = 'Manage Users';
+            }
+        }
+    </script>
 </x-layouts.app>

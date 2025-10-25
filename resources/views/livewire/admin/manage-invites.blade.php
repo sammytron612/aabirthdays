@@ -28,8 +28,8 @@
     <!-- Actions Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Admin Users</h2>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">{{ $users->total() }} total users</p>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Pending Invitations</h2>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">{{ $invitations->total() }} total invitations</p>
         </div>
 
         @if (!$showInviteForm)
@@ -135,71 +135,85 @@
         </div>
     @endif
 
-    <!-- Users List -->
+    <!-- Invitations List -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">All Users</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">All Invitations</h3>
         </div>
 
-        @if($users->count() > 0)
+        @if($invitations->count() > 0)
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50 dark:bg-gray-700">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Invitee</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Invited By</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Expires</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach($users as $user)
+                        @foreach($invitations as $invitation)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-8 w-8">
                                             <div class="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">
-                                                <span class="text-white text-sm font-medium">{{ $user->initials() }}</span>
+                                                <span class="text-white text-sm font-medium">{{ strtoupper(substr($invitation->name, 0, 1)) }}</span>
                                             </div>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->name }}</div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $invitation->name }}</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $invitation->email }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                        {{ $user->role->value === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300' }}">
-                                        {{ $user->role->label() }}
+                                        {{ $invitation->role->value === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300' }}">
+                                        {{ $invitation->role->label() }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300">
-                                        Active
-                                    </span>
+                                    @if($invitation->isAccepted())
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300">
+                                            Accepted
+                                        </span>
+                                    @elseif($invitation->isExpired())
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+                                            Expired
+                                        </span>
+                                    @else
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
+                                            Pending
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $user->created_at->format('M j, Y') }}
+                                    {{ $invitation->invitedBy->name }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    {{ $invitation->expires_at->format('M j, Y H:i') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
-                                    <button
-                                        wire:click="resendInvite({{ $user->id }})"
-                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
-                                    >
-                                        Resend
-                                    </button>
-
-                                    @if($user->id !== auth()->id())
+                                    @if($invitation->isValid())
                                         <button
-                                            wire:click="deleteUser({{ $user->id }})"
-                                            wire:confirm="Are you sure you want to delete this user?"
-                                            class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
+                                            wire:click="resendInvitation({{ $invitation->id }})"
+                                            class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
                                         >
-                                            Delete
+                                            Resend
                                         </button>
                                     @endif
+
+                                    <button
+                                        wire:click="deleteInvitation({{ $invitation->id }})"
+                                        wire:confirm="Are you sure you want to delete this invitation?"
+                                        class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -209,14 +223,14 @@
 
             <!-- Pagination -->
             <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                {{ $users->links() }}
+                {{ $invitations->links() }}
             </div>
         @else
             <div class="px-6 py-12 text-center">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No users found</h3>
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No invitations found</h3>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by sending your first invite.</p>
             </div>
         @endif
