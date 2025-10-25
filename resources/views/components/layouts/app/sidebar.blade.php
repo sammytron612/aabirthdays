@@ -29,6 +29,10 @@
                 <flux:navlist.group :heading="__('Communication')" class="grid">
                     <flux:navlist.item icon="envelope" href="{{ route('communication.email') }}" :current="request()->routeIs('communication.email')" wire:navigate>{{ __('Email') }}</flux:navlist.item>
                 </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Administration')" class="grid">
+                    <flux:navlist.item icon="cog-6-tooth" href="{{ route('admin.index') }}" :current="request()->routeIs('admin.*')" wire:navigate>{{ __('Admin Panel') }}</flux:navlist.item>
+                </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />

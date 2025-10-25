@@ -75,25 +75,45 @@
                     </div>
                 </div>
 
-                <!-- Party Date/Time Editor (only show if there are anniversary celebrations) -->
-                @if(strpos($message, 'SPECIAL CELEBRATION') !== false)
+                <!-- Party Date/Time Editor (show for anniversary celebrations) -->
+                @if(strpos($subject, 'Monthly Anniversary Celebrations') !== false)
                     <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-4">
                         <div class="flex items-center mb-2">
-                            <span class="text-yellow-800 dark:text-yellow-200 font-medium">Party Details</span>
+                            <span class="text-yellow-800 dark:text-yellow-200 font-medium">Special Celebration Options</span>
                         </div>
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                When (Date & Time):
-                            </label>
-                            <input
-                                type="text"
-                                wire:model.live="partyDateTime"
-                                placeholder="e.g., Saturday, November 16th at 6:00 PM"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('partyDateTime') border-red-500 @enderror"
-                            >
-                            @error('partyDateTime')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                            @enderror
+                        <div class="space-y-4">
+                            <div>
+                                <label class="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        wire:model.live="isSpecialCelebration"
+                                        class="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:ring-blue-500 dark:bg-gray-700"
+                                    >
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Enable a party night
+                                    </span>
+                                </label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+                                    When enabled, adds special celebration details and food sharing invitation to the email
+                                </p>
+                            </div>
+                            @if($isSpecialCelebration)
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    When (Date & Time):
+                          SPECIAL CELEBRATION!
+We will be hosting a celebration party for our members reaching 6-month and yearly milestones!      </label>
+                                <input
+                                    type="text"
+                                    wire:model.live="partyDateTime"
+                                    placeholder="e.g., Sunday, November 30th at 7:30 PM"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('partyDateTime') border-red-500 @enderror"
+                                >
+                                @error('partyDateTime')
+                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            @endif
                         </div>
                     </div>
                 @endif

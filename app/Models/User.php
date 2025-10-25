@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -47,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 
@@ -60,5 +63,37 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Check if the user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+
+    /**
+     * Check if the user has birthday role
+     */
+    public function isBirthday(): bool
+    {
+        return $this->role === UserRole::Birthday;
+    }
+
+    /**
+     * Scope to get only admin users
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', UserRole::Admin);
+    }
+
+    /**
+     * Scope to get only birthday users
+     */
+    public function scopeBirthday($query)
+    {
+        return $query->where('role', UserRole::Birthday);
     }
 }

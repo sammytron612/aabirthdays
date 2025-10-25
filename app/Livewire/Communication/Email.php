@@ -19,6 +19,7 @@ class Email extends Component
     public $showAnniversariesModal = false;
     public $showCustomMessageModal = false;
     public $partyDateTime = '';
+    public $isSpecialCelebration = false;
 
     public function toggleSelectAll()
     {
@@ -157,6 +158,11 @@ class Email extends Component
             return false;
         });
 
+        // Automatically enable special celebration if there are party-worthy anniversaries
+        if ($partyWorthy->isNotEmpty()) {
+            $this->isSpecialCelebration = true;
+        }
+
         // Pre-fill email with anniversary data
         $this->subject = 'Monthly Anniversary Celebrations for the Lifeboat Group - ' . $anniversaries->first()['anniversary_date']->format('F Y');
 
@@ -167,21 +173,21 @@ class Email extends Component
             $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . " (" . $anniversary['anniversary_date']->format('M j') . ")\n";
         }
 
-        // Add party information if there are 6-month or yearly anniversaries
-        if ($partyWorthy->isNotEmpty()) {
+        // Add party information if there are 6-month or yearly anniversaries AND special celebration is enabled
+        if ($partyWorthy->isNotEmpty() && $this->isSpecialCelebration) {
             $message .= "\nSPECIAL CELEBRATION!\n";
             $message .= "We will be hosting a celebration party for our members reaching 6-month and yearly milestones!\n\n";
-
-            $whenText = !empty($this->partyDateTime) ? $this->partyDateTime : '[Date and time to be announced]';
-            $message .= "When: " . $whenText . "\n";
-            $message .= "Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n";
-            $message .= "Please bring food to share if possible!\n\n";
             $message .= "Special congratulations to:\n";
 
             foreach ($partyWorthy as $anniversary) {
                 $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . "\n";
             }
             $message .= "\n";
+
+            $whenText = !empty($this->partyDateTime) ? $this->partyDateTime : '[Date and time to be announced]';
+            $message .= "When: " . $whenText . "\n\n";
+            $message .= "Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n\n";
+            $message .= "Please bring food to share if possible!\n\n";
         }
 
         $message .= "Congratulations to all!";
@@ -201,6 +207,14 @@ class Email extends Component
     public function updatedPartyDateTime()
     {
         // Regenerate the message when party date/time changes
+        if ($this->showPreview) {
+            $this->regenerateMessage();
+        }
+    }
+
+    public function updatedIsSpecialCelebration()
+    {
+        // Regenerate the message when special celebration toggle changes
         if ($this->showPreview) {
             $this->regenerateMessage();
         }
@@ -240,22 +254,21 @@ class Email extends Component
             $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . " (" . $anniversary['anniversary_date']->format('M j') . ")\n";
         }
 
-        // Add party information if there are 6-month or yearly anniversaries
-        if ($partyWorthy->isNotEmpty()) {
+        // Add party information if there are 6-month or yearly anniversaries AND special celebration is enabled
+        if ($partyWorthy->isNotEmpty() && $this->isSpecialCelebration) {
             $message .= "\nSPECIAL CELEBRATION!\n";
             $message .= "We will be hosting a celebration party for our members reaching 6-month and yearly milestones!\n\n";
-
-            $whenText = !empty($this->partyDateTime) ? $this->partyDateTime : '[Date and time to be announced]';
-            $message .= "When: " . $whenText . "\n";
-            $message .= "Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n";
-            $message .= "\n";
-            $message .= "\nPlease bring food to share if possible!\n\n";
             $message .= "Special congratulations to:\n";
 
             foreach ($partyWorthy as $anniversary) {
                 $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . "\n";
             }
             $message .= "\n";
+
+            $whenText = !empty($this->partyDateTime) ? $this->partyDateTime : '[Date and time to be announced]';
+            $message .= "When: " . $whenText . "\n\n";
+            $message .= "Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n\n";
+            $message .= "Please bring food to share if possible!\n\n";
         }
 
         $message .= "Congratulations to all!";
@@ -298,8 +311,8 @@ class Email extends Component
             'partyDateTime.min' => 'Please provide a more detailed date and time for the party.'
         ];
 
-        // If there's a special celebration, require party date/time
-        if (strpos($this->message, 'SPECIAL CELEBRATION') !== false) {
+        // If there's a special celebration enabled and special celebration text is present, require party date/time
+        if ($this->isSpecialCelebration && strpos($this->message, 'SPECIAL CELEBRATION') !== false) {
             $rules['partyDateTime'] = 'required|min:5';
         }
 

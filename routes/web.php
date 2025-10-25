@@ -5,11 +5,13 @@ use App\Livewire\Members\MembersList;
 use App\Livewire\Analytics\Statistics;
 use App\Livewire\Analytics\Reports;
 use App\Livewire\Communication\Email;
+use App\Livewire\Admin\ManageInvites;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\DataManagement;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Http\Controllers\InvitationController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -20,6 +22,10 @@ Route::get('/', function () {
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+// Invitation acceptance route (must be before auth middleware)
+Route::get('/invitation/{token}', [InvitationController::class, 'accept'])
+    ->name('invitation.accept');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -32,6 +38,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('analytics/reports', Reports::class)->name('analytics.reports');
 
     Route::get('communication/email', Email::class)->name('communication.email');
+
+    Route::get('admin', function () {
+        return view('admin.index');
+    })->name('admin.index');
+
+    Route::get('admin/invites', ManageInvites::class)->name('admin.invites');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');
