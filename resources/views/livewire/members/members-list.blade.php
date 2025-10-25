@@ -207,6 +207,15 @@
 
     <!-- Edit Member Modal -->
     @if($showEditModal)
+        <style>
+            @keyframes blink {
+                0%, 50% { opacity: 1; background-color: rgb(59 130 246); transform: scale(1.05); }
+                25%, 75% { opacity: 0.3; background-color: rgb(239 68 68); transform: scale(1.1); }
+            }
+            .blink-animation {
+                animation: blink 0.3s ease-in-out infinite;
+            }
+        </style>
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
                 <!-- Modal Header -->
@@ -224,7 +233,23 @@
                 </div>
 
                 <!-- Modal Content - Scrollable -->
-                <div class="flex-1 overflow-y-auto">
+                <div class="flex-1 overflow-y-auto" x-data="{
+                    scrollToBottom() { this.$el.scrollTop = this.$el.scrollHeight; },
+                    blinkSaveButton() {
+                        const saveButton = document.querySelector('#save-button');
+                        if (saveButton) {
+                            saveButton.classList.add('blink-animation');
+                            setTimeout(() => {
+                                saveButton.classList.remove('blink-animation');
+                            }, 3000);
+                        }
+                    }
+                }" x-init="$wire.on('sobriety-date-added', () => {
+                    setTimeout(() => {
+                        scrollToBottom();
+                        blinkSaveButton();
+                    }, 50);
+                })">>
                     <form wire:submit.prevent="saveEditedMember" class="flex flex-col h-full">
                         <div class="p-6 space-y-4 flex-1">
                             <!-- Name -->
@@ -339,6 +364,7 @@
                                     {{ __('Cancel') }}
                                 </flux:button>
                                 <flux:button
+                                    id="save-button"
                                     type="submit"
                                     variant="primary"
                                 >

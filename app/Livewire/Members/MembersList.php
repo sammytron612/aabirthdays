@@ -161,6 +161,9 @@ class MembersList extends Component
             usort($this->sobrietyDates, function($a, $b) {
                 return strcmp($b['sobriety_date'], $a['sobriety_date']);
             });
+
+            // Emit event to trigger scroll to bottom
+            $this->dispatch('sobriety-date-added');
         }
     }
 
