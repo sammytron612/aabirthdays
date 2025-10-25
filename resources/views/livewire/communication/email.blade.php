@@ -9,7 +9,7 @@
         <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
             <div class="flex">
                 <div class="text-green-800 dark:text-green-200">
-                    ✅ {{ session('success') }}
+                    {{ session('success') }}
                 </div>
             </div>
         </div>
@@ -19,7 +19,7 @@
         <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
             <div class="flex">
                 <div class="text-red-800 dark:text-red-200">
-                    ⚠️ {{ session('error') }}
+                    {{ session('error') }}
                 </div>
             </div>
         </div>
@@ -33,19 +33,19 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button wire:click="useTemplate('birthday')" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg p-4 text-center transition-colors">
-                    <div class="text-2xl mb-2">🎉</div>
+                    <div class="text-2xl mb-2"></div>
                     <div class="text-sm font-medium text-gray-900 dark:text-white">Birthday Notifications</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Click to use</div>
                 </button>
 
                 <button wire:click="useTemplate('custom')" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg p-4 text-center transition-colors">
-                    <div class="text-2xl mb-2">📧</div>
+                    <div class="text-2xl mb-2"></div>
                     <div class="text-sm font-medium text-gray-900 dark:text-white">Custom Message</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Click to use</div>
                 </button>
 
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-center opacity-50">
-                    <div class="text-2xl mb-2">✉️</div>
+                    <div class="text-2xl mb-2"></div>
                     <div class="text-sm font-medium text-gray-900 dark:text-white">Template 3</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Coming Soon</div>
                 </div>
@@ -79,7 +79,7 @@
                 @if(strpos($message, 'SPECIAL CELEBRATION') !== false)
                     <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-4">
                         <div class="flex items-center mb-2">
-                            <span class="text-yellow-800 dark:text-yellow-200 font-medium">🎊 Party Details</span>
+                            <span class="text-yellow-800 dark:text-yellow-200 font-medium">Party Details</span>
                         </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -99,10 +99,10 @@
                 @endif
 
                 <!-- Custom Message Editor (only show for custom messages) -->
-                @if(strpos($subject, 'Message from AA Birthdays Team') !== false)
+                @if(strpos($subject, 'Message from AA') !== false)
                     <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
                         <div class="flex items-center mb-3">
-                            <span class="text-blue-800 dark:text-blue-200 font-medium">📝 Edit Your Message</span>
+                            <span class="text-blue-800 dark:text-blue-200 font-medium">Edit Your Message</span>
                         </div>
                         <div class="space-y-4">
                             <div>
@@ -168,10 +168,10 @@
             <!-- Action Buttons -->
             <div class="flex justify-end space-x-3">
                 <flux:button wire:click="hidePreview" variant="outline">
-                    📝 Edit Email
+                    Edit Email
                 </flux:button>
                 <flux:button wire:click="sendEmail" variant="primary">
-                    🚀 Send Email
+                    Send Email
                 </flux:button>
             </div>
         </div>
@@ -207,7 +207,7 @@
 
                             @if(count($yearlyAnniversaries) > 0)
                                 <div>
-                                    <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">🎉 Yearly Anniversaries</h4>
+                                    <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Yearly Anniversaries</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         @foreach($yearlyAnniversaries as $anniversary)
                                             <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
@@ -240,7 +240,7 @@
 
                             @if(count($monthlyAnniversaries) > 0)
                                 <div>
-                                    <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">📅 Monthly Milestones</h4>
+                                    <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Monthly Milestones</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         @foreach($monthlyAnniversaries as $anniversary)
                                             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
@@ -273,9 +273,6 @@
                         </div>
                     @else
                         <div class="text-center py-12">
-                            <div class="text-gray-500 dark:text-gray-400 mb-2">
-                                <div class="text-6xl mb-4">📅</div>
-                            </div>
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">No anniversaries this month</h3>
                             <p class="text-gray-500 dark:text-gray-400">
                                 No sobriety anniversaries found for {{ \Carbon\Carbon::now()->format('F Y') }}.
@@ -292,7 +289,7 @@
                         </flux:button>
                         @if($anniversaries && count($anniversaries) > 0)
                             <flux:button wire:click="emailAnniversaries" variant="primary">
-                                📧 Create Email
+                                Create Email
                             </flux:button>
                         @endif
                     </div>
@@ -322,7 +319,7 @@
                 <!-- Modal Content -->
                 <div class="px-6 py-4">
                     <div class="text-center py-8">
-                        <div class="text-6xl mb-4">📧</div>
+                        <div class="text-6xl mb-4"></div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Create Custom Message</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-6">
                             Send a custom message to all members. You'll be able to edit the subject and content before sending.
@@ -343,7 +340,7 @@
                             Cancel
                         </flux:button>
                         <flux:button wire:click="createCustomEmail" variant="primary">
-                            📝 Create Email
+                            Create Email
                         </flux:button>
                     </div>
                 </div>

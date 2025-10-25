@@ -6,7 +6,7 @@
                 {{ $this->getCurrentMonthName() }} Anniversaries
             </h2>
 
-            <!-- Month Navigation -->
+            <!-- Month Navigation - Better Styling -->
             <div class="flex items-center space-x-2">
                 @php
                     $prevMonth = \Carbon\Carbon::create($currentYear, $currentMonth, 1)->subMonth();
@@ -17,22 +17,20 @@
                     wire:click="previousMonth"
                     variant="outline"
                     size="sm"
-                    class="flex items-center space-x-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
+                    class="flex items-center space-x-1 cursor-pointer">
                     <span>{{ $prevMonth->format('M') }}</span>
                 </flux:button>
+
+                <div class="text-sm text-gray-600 dark:text-gray-400 px-3 py-2 bg-gray-100 dark:bg-zinc-700 rounded-md">
+                    {{ \Carbon\Carbon::create($currentYear, $currentMonth, 1)->format('Y') }}
+                </div>
 
                 <flux:button
                     wire:click="nextMonth"
                     variant="outline"
                     size="sm"
-                    class="flex items-center space-x-1">
+                    class="flex items-center space-x-1 cursor-pointer">
                     <span>{{ $nextMonth->format('M') }}</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
                 </flux:button>
             </div>
         </div>
@@ -43,43 +41,50 @@
             <flux:button
                 wire:click="setPeriod('1')"
                 variant="{{ $selectedPeriod === '1' ? 'primary' : 'outline' }}"
-                size="sm">
+                size="sm"
+                class="cursor-pointer">
                 1 Month
             </flux:button>
             <flux:button
                 wire:click="setPeriod('2')"
                 variant="{{ $selectedPeriod === '2' ? 'primary' : 'outline' }}"
-                size="sm">
+                size="sm"
+                class="cursor-pointer">
                 2 Months
             </flux:button>
             <flux:button
                 wire:click="setPeriod('3')"
                 variant="{{ $selectedPeriod === '3' ? 'primary' : 'outline' }}"
-                size="sm">
+                size="sm"
+                class="cursor-pointer">
                 3 Months
             </flux:button>
             <flux:button
                 wire:click="setPeriod('6')"
                 variant="{{ $selectedPeriod === '6' ? 'primary' : 'outline' }}"
-                size="sm">
+                size="sm"
+                class="cursor-pointer">
                 6 Months
             </flux:button>
             <flux:button
                 wire:click="setPeriod('9')"
                 variant="{{ $selectedPeriod === '9' ? 'primary' : 'outline' }}"
-                size="sm">
+                size="sm"
+                class="cursor-pointer">
                 9 Months
             </flux:button>
             <flux:button
                 wire:click="setPeriod('yearly')"
                 variant="{{ $selectedPeriod === 'yearly' ? 'primary' : 'outline' }}"
-                size="sm">
+                size="sm"
+                class="cursor-pointer">
                 Yearly Only
             </flux:button>
             <flux:button
                 wire:click="setPeriod('all')"
                 variant="{{ $selectedPeriod === 'all' ? 'primary' : 'outline' }}"
-                size="sm">
+                size="sm"
+                class="cursor-pointer">
                 All Anniversaries
             </flux:button>
         </div>
@@ -146,7 +151,7 @@
                         </div>
 
                         <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Started Sobriety') }}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Sobriety date') }}</span>
                             <span class="text-sm text-gray-900 dark:text-white">
                                 {{ \Carbon\Carbon::parse($anniversary['sobriety_date'])->format('M j, Y') }}
                             </span>

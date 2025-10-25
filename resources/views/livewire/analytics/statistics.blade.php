@@ -1,4 +1,9 @@
-<div class="space-y-8">
+<div class="space-y-8" x-data x-init="$nextTick(() => {
+    // Ensure charts load when Alpine component initializes
+    if (typeof initializeCharts === 'function') {
+        setTimeout(() => initializeCharts(), 150);
+    }
+})">
     <div class="mb-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Analytics & Statistics</h1>
         <p class="text-gray-600 dark:text-gray-300 mt-2">Comprehensive insights into member sobriety journey data</p>
@@ -241,7 +246,33 @@
         }
 
         // Initialize charts when DOM is ready OR when Livewire component is loaded
-        document.addEventListener('DOMContentLoaded', initializeCharts);
-        document.addEventListener('livewire:navigated', initializeCharts);
+        function ensureChartsLoad() {
+            // Destroy existing charts if they exist to prevent conflicts
+            const chartIds = ['sobrietyDatesChart', 'sobrietyChart', 'relapsesChart', 'distributionChart'];
+            chartIds.forEach(id => {
+                const existingChart = Chart.getChart(id);
+                if (existingChart) {
+                    existingChart.destroy();
+                }
+            });
+
+            // Initialize charts after a small delay to ensure DOM is ready
+            setTimeout(() => {
+                initializeCharts();
+            }, 100);
+        }
+
+        // Multiple event listeners to ensure charts load in all scenarios
+        document.addEventListener('DOMContentLoaded', ensureChartsLoad);
+        document.addEventListener('livewire:navigated', ensureChartsLoad);
+        document.addEventListener('livewire:load', ensureChartsLoad);
+
+        // Also try to load when the component is ready
+        document.addEventListener('alpine:init', ensureChartsLoad);
+
+        // Fallback: if page is already loaded, initialize immediately
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            ensureChartsLoad();
+        }
     </script>
 </div>

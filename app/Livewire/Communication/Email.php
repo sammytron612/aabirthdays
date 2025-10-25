@@ -64,12 +64,12 @@ class Email extends Component
     public function createCustomEmail()
     {
         // Pre-fill email with basic template
-        $this->subject = 'Message from AA Birthdays Team - ' . \Carbon\Carbon::now()->format('F Y');
+        $this->subject = 'Message from Lifeboat - ' . \Carbon\Carbon::now()->format('F Y');
 
-        $this->message = "Dear Members,\n\n";
+        $this->message = "Hi All,\n\n";
         $this->message .= "We hope this message finds you well.\n\n";
         $this->message .= "[Your message content here]\n\n";
-        $this->message .= "Best regards";
+        $this->message .= "Regards";
 
         // Set admin users as recipients
         $this->selectedMembers = User::pluck('id')->toArray();
@@ -158,28 +158,28 @@ class Email extends Component
         });
 
         // Pre-fill email with anniversary data
-        $this->subject = 'Monthly Anniversary Celebrations - ' . $anniversaries->first()['anniversary_date']->format('F Y');
+        $this->subject = 'Monthly Anniversary Celebrations for the Lifeboat Group - ' . $anniversaries->first()['anniversary_date']->format('F Y');
 
-        $message = "Dear Members,\n\n";
+        $message = "Hi All,\n\n";
         $message .= "We're excited to celebrate the following sobriety anniversaries this month:\n\n";
 
         foreach ($anniversaries as $anniversary) {
-            $message .= "🎉 " . $anniversary['member']->name . " - " . $anniversary['milestone'] . " (" . $anniversary['anniversary_date']->format('M j') . ")\n";
+            $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . " (" . $anniversary['anniversary_date']->format('M j') . ")\n";
         }
 
         // Add party information if there are 6-month or yearly anniversaries
         if ($partyWorthy->isNotEmpty()) {
-            $message .= "\n🎊 SPECIAL CELEBRATION! 🎊\n";
+            $message .= "\nSPECIAL CELEBRATION!\n";
             $message .= "We will be hosting a celebration party for our members reaching 6-month and yearly milestones!\n\n";
 
             $whenText = !empty($this->partyDateTime) ? $this->partyDateTime : '[Date and time to be announced]';
-            $message .= "📅 When: " . $whenText . "\n";
-            $message .= "📍 Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n";
-            $message .= "🍽️ Please bring food to share if possible!\n\n";
+            $message .= "When: " . $whenText . "\n";
+            $message .= "Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n";
+            $message .= "Please bring food to share if possible!\n\n";
             $message .= "Special congratulations to:\n";
 
             foreach ($partyWorthy as $anniversary) {
-                $message .= "⭐ " . $anniversary['member']->name . " - " . $anniversary['milestone'] . "\n";
+                $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . "\n";
             }
             $message .= "\n";
         }
@@ -233,26 +233,27 @@ class Email extends Component
         });
 
         // Regenerate message
-        $message = "Dear Members,\n\n";
+        $message = "Hi All,\n\n";
         $message .= "We're excited to celebrate the following sobriety anniversaries this month:\n\n";
 
         foreach ($anniversaries as $anniversary) {
-            $message .= "🎉 " . $anniversary['member']->name . " - " . $anniversary['milestone'] . " (" . $anniversary['anniversary_date']->format('M j') . ")\n";
+            $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . " (" . $anniversary['anniversary_date']->format('M j') . ")\n";
         }
 
         // Add party information if there are 6-month or yearly anniversaries
         if ($partyWorthy->isNotEmpty()) {
-            $message .= "\n🎊 SPECIAL CELEBRATION! 🎊\n";
+            $message .= "\nSPECIAL CELEBRATION!\n";
             $message .= "We will be hosting a celebration party for our members reaching 6-month and yearly milestones!\n\n";
 
             $whenText = !empty($this->partyDateTime) ? $this->partyDateTime : '[Date and time to be announced]';
-            $message .= "📅 When: " . $whenText . "\n";
-            $message .= "📍 Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n";
-            $message .= "🍽️ Please bring food to share if possible!\n\n";
+            $message .= "When: " . $whenText . "\n";
+            $message .= "Where: The Jubilee Centre\n      Allendale Road\n      Farringdon\n      Sunderland\n      SR3 3EL\n";
+            $message .= "\n";
+            $message .= "\nPlease bring food to share if possible!\n\n";
             $message .= "Special congratulations to:\n";
 
             foreach ($partyWorthy as $anniversary) {
-                $message .= "⭐ " . $anniversary['member']->name . " - " . $anniversary['milestone'] . "\n";
+                $message .= $anniversary['member']->name . " - " . $anniversary['milestone'] . "\n";
             }
             $message .= "\n";
         }
