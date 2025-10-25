@@ -279,4 +279,26 @@ class MembersList extends Component
             'members' => $paginator,
         ]);
     }
+
+    /**
+     * Calculate and format the time sober from a given sobriety date.
+     */
+    public function getTimeSober($sobrietyDate)
+    {
+        if (!$sobrietyDate) {
+            return 'N/A';
+        }
+
+        $days = \Carbon\Carbon::parse($sobrietyDate)->diffInDays(now());
+        $years = floor($days / 365.25);
+        $months = floor(($days % 365.25) / 30.44);
+        $remainingDays = floor($days % 30.44);
+
+        $parts = [];
+        if ($years > 0) $parts[] = $years . ' year' . ($years > 1 ? 's' : '');
+        if ($months > 0) $parts[] = $months . ' month' . ($months > 1 ? 's' : '');
+        if ($remainingDays > 0 || empty($parts)) $parts[] = $remainingDays . ' day' . ($remainingDays != 1 ? 's' : '');
+
+        return implode(', ', $parts);
+    }
 }

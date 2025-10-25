@@ -1,13 +1,13 @@
 <div class="space-y-4">
     <!-- Header with month navigation -->
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ $this->getCurrentMonthName() }} Anniversaries
             </h2>
 
             <!-- Month Navigation - Better Styling -->
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center justify-center sm:justify-end space-x-2">
                 @php
                     $prevMonth = \Carbon\Carbon::create($currentYear, $currentMonth, 1)->subMonth();
                     $nextMonth = \Carbon\Carbon::create($currentYear, $currentMonth, 1)->addMonth();
@@ -36,8 +36,7 @@
         </div>
 
         <!-- Filter Buttons -->
-                <!-- Filter Buttons -->
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
             <flux:button
                 wire:click="setPeriod('1')"
                 variant="{{ $selectedPeriod === '1' ? 'primary' : 'outline' }}"
@@ -109,7 +108,7 @@
 
     <!-- Anniversaries Grid -->
     @if($anniversaries->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($anniversaries as $anniversary)
                 <div class="bg-white dark:bg-zinc-800 border-l-4 {{ $anniversary['type'] === 'yearly' ? 'border-l-red-500' : 'border-l-green-500' }} border-r border-t border-b border-gray-200 dark:border-r-zinc-700 dark:border-t-zinc-700 dark:border-b-zinc-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <!-- Member Info -->

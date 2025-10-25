@@ -27,11 +27,11 @@
 
     @if (!$showPreview)
         <!-- Quick Templates Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Quick Templates</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Quick Templates</h2>
             <p class="text-gray-600 dark:text-gray-300 mb-4">Select a template to pre-fill your email</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <button wire:click="useTemplate('birthday')" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg p-4 text-center transition-colors">
                     <div class="text-2xl mb-2"></div>
                     <div class="text-sm font-medium text-gray-900 dark:text-white">Birthday Notifications</div>
@@ -53,10 +53,10 @@
         </div>
     @else
         <!-- Email Preview -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Email Preview</h2>
-                <flux:button wire:click="hidePreview" variant="outline">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Email Preview</h2>
+                <flux:button wire:click="hidePreview" variant="outline" class="w-full sm:w-auto">
                     ← Back to Edit
                 </flux:button>
             </div>
@@ -146,9 +146,9 @@
                     Primary Recipients - Admin Users ({{ count($selectedMembersData) }})
                 </h3>
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         @foreach($selectedMembersData as $admin)
-                            <div class="text-sm text-gray-700 dark:text-gray-300">
+                            <div class="text-sm text-gray-700 dark:text-gray-300 break-words">
                                 • {{ $admin->name }} ({{ $admin->email }})
                             </div>
                         @endforeach
@@ -166,11 +166,11 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-end space-x-3">
-                <flux:button wire:click="hidePreview" variant="outline">
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <flux:button wire:click="hidePreview" variant="outline" class="order-2 sm:order-1">
                     Edit Email
                 </flux:button>
-                <flux:button wire:click="sendEmail" variant="primary">
+                <flux:button wire:click="sendEmail" variant="primary" class="order-1 sm:order-2">
                     Send Email
                 </flux:button>
             </div>
@@ -179,15 +179,15 @@
 
     <!-- Anniversaries Modal -->
     @if($showAnniversariesModal)
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
                 <!-- Modal Header -->
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                             Monthly Anniversaries - {{ \Carbon\Carbon::now()->format('F Y') }}
                         </h3>
-                        <button wire:click="closeAnniversariesModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <button wire:click="closeAnniversariesModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -196,7 +196,7 @@
                 </div>
 
                 <!-- Modal Content -->
-                <div class="px-6 py-4 overflow-y-auto max-h-[calc(90vh-140px)]">
+                <div class="px-4 sm:px-6 py-4 overflow-y-auto max-h-[calc(90vh-140px)]">
                     @if($anniversaries && count($anniversaries) > 0)
                         <div class="space-y-4">
                             <!-- Yearly Anniversaries -->
@@ -208,15 +208,15 @@
                             @if(count($yearlyAnniversaries) > 0)
                                 <div>
                                     <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Yearly Anniversaries</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="grid grid-cols-1 gap-3">
                                         @foreach($yearlyAnniversaries as $anniversary)
                                             <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
-                                                <div class="flex justify-between items-start">
-                                                    <div>
+                                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                                                    <div class="flex-1">
                                                         <div class="font-medium text-gray-900 dark:text-white">
                                                             {{ $anniversary['member']->name }}
                                                         </div>
-                                                        <div class="text-sm text-gray-600 dark:text-gray-300">
+                                                        <div class="text-sm text-gray-600 dark:text-gray-300 break-words">
                                                             {{ $anniversary['member']->email }}
                                                         </div>
                                                         <div class="text-sm text-green-700 dark:text-green-300 mt-1">
@@ -241,22 +241,22 @@
                             @if(count($monthlyAnniversaries) > 0)
                                 <div>
                                     <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Monthly Milestones</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="grid grid-cols-1 gap-3">
                                         @foreach($monthlyAnniversaries as $anniversary)
                                             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-                                                <div class="flex justify-between items-start">
-                                                    <div>
+                                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                                                    <div class="flex-1">
                                                         <div class="font-medium text-gray-900 dark:text-white">
                                                             {{ $anniversary['member']->name }}
                                                         </div>
-                                                        <div class="text-sm text-gray-600 dark:text-gray-300">
+                                                        <div class="text-sm text-gray-600 dark:text-gray-300 break-words">
                                                             {{ $anniversary['member']->email }}
                                                         </div>
                                                         <div class="text-sm text-blue-700 dark:text-blue-300 mt-1">
                                                             Started: {{ $anniversary['sobriety_date']->format('M j, Y') }}
                                                         </div>
                                                     </div>
-                                                    <div class="text-right">
+                                                    <div class="text-right flex-shrink-0">
                                                         <div class="text-lg font-bold text-blue-700 dark:text-blue-300">
                                                             {{ $anniversary['milestone'] }}
                                                         </div>
@@ -282,13 +282,13 @@
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                    <div class="flex justify-end space-x-3">
-                        <flux:button wire:click="closeAnniversariesModal" variant="outline">
+                <div class="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-col sm:flex-row justify-end gap-3">
+                        <flux:button wire:click="closeAnniversariesModal" variant="outline" class="order-2 sm:order-1">
                             Cancel
                         </flux:button>
                         @if($anniversaries && count($anniversaries) > 0)
-                            <flux:button wire:click="emailAnniversaries" variant="primary">
+                            <flux:button wire:click="emailAnniversaries" variant="primary" class="order-1 sm:order-2">
                                 Create Email
                             </flux:button>
                         @endif
@@ -300,15 +300,15 @@
 
     <!-- Custom Message Modal -->
     @if($showCustomMessageModal)
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
                 <!-- Modal Header -->
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                             Custom Message Template
                         </h3>
-                        <button wire:click="closeCustomMessageModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <button wire:click="closeCustomMessageModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -317,11 +317,11 @@
                 </div>
 
                 <!-- Modal Content -->
-                <div class="px-6 py-4">
-                    <div class="text-center py-8">
-                        <div class="text-6xl mb-4"></div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Create Custom Message</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-6">
+                <div class="px-4 sm:px-6 py-4">
+                    <div class="text-center py-6 sm:py-8">
+                        <div class="text-4xl sm:text-6xl mb-4"></div>
+                        <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">Create Custom Message</h3>
+                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6">
                             Send a custom message to all members. You'll be able to edit the subject and content before sending.
                         </p>
 
@@ -334,12 +334,12 @@
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                    <div class="flex justify-end space-x-3">
-                        <flux:button wire:click="closeCustomMessageModal" variant="outline">
+                <div class="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-col sm:flex-row justify-end gap-3">
+                        <flux:button wire:click="closeCustomMessageModal" variant="outline" class="order-2 sm:order-1">
                             Cancel
                         </flux:button>
-                        <flux:button wire:click="createCustomEmail" variant="primary">
+                        <flux:button wire:click="createCustomEmail" variant="primary" class="order-1 sm:order-2">
                             Create Email
                         </flux:button>
                     </div>

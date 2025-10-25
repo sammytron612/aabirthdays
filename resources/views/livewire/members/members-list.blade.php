@@ -1,16 +1,18 @@
 <div class="space-y-6">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
                 {{ __('Members List') }}
             </h1>
             <p class="text-sm text-gray-600 dark:text-gray-400">
                 {{ __('View and manage all members and their sobriety milestones') }}
             </p>
         </div>
-        <flux:button :href="route('members.add')" variant="primary" wire:navigate>
-            {{ __('Add Member') }}
-        </flux:button>
+        <div class="flex-shrink-0">
+            <flux:button :href="route('members.add')" variant="primary" class="w-full sm:w-auto" wire:navigate>
+                {{ __('Add Member') }}
+            </flux:button>
+        </div>
     </div>
 
     <!-- Success Message -->
@@ -24,7 +26,7 @@
 
     <!-- Search and Filters -->
     <div class="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg p-4">
-        <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex flex-col gap-4">
             <div class="flex-1">
                 <flux:input
                     wire:model.live="search"
@@ -32,11 +34,12 @@
                     placeholder="{{ __('Search by name or email...') }}"
                 />
             </div>
-            <div class="flex gap-2 items-end">
+            <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
                 <flux:button
                     wire:click="sortBy('upcoming_anniversary')"
                     :variant="$sortBy === 'upcoming_anniversary' ? 'primary' : 'ghost'"
                     size="sm"
+                    class="flex-1 sm:flex-none"
                 >
                     {{ __('Upcoming Anniversaries') }}
                     @if($sortBy === 'upcoming_anniversary')
@@ -47,6 +50,7 @@
                     wire:click="$set('showDisabled', {{ $showDisabled ? 'false' : 'true' }})"
                     :variant="$showDisabled ? 'ghost' : 'primary'"
                     size="sm"
+                    class="flex-1 sm:flex-none"
                 >
                     {{ $showDisabled ? __('Hide Disabled') : __('Show Disabled') }}
                 </flux:button>
@@ -56,38 +60,86 @@
 
     <!-- Members Table -->
     <div class="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Mobile View -->
+        <div class="block sm:hidden">
+            <div class="divide-y divide-gray-200 dark:divide-zinc-700">
+                @forelse($members as $member)
+                    @php
+                        $sobrietyDate = $member->mostRecentSobrietyDate();
+                        $nextAnniversary = $sobrietyDate ? $this->getUpcomingAnniversaryDate($sobrietyDate->sobriety_date) : null;
+                        $daysUntilAnniversary = $nextAnniversary ? round(now()->diffInDays($nextAnniversary)) : null;
+                    @endphp
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="font-medium text-gray-900 dark:text-white">{{ $member->name }}</div>
+                            <div class="flex space-x-2">
+                                @if($member->is_disabled)
+                                    <span class="px-2 py-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 rounded-full">
+                                        {{ __('Disabled') }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full">
+                                        {{ __('Active') }}
+                                    </span>
+                                @endif
+                                <flux:button wire:click="openEditModal({{ $member->id }})" variant="ghost" size="xs">
+                                    {{ __('Edit') }}
+                                </flux:button>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-300">{{ $member->email }}</div>
+                        @if($sobrietyDate)
+                            <div class="text-sm">
+                                <span class="text-gray-500 dark:text-gray-400">Started:</span>
+                                <span class="text-gray-900 dark:text-white">{{ $sobrietyDate->sobriety_date->format('M j, Y') }}</span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-gray-500 dark:text-gray-400">Time Sober:</span>
+                                <span class="text-gray-900 dark:text-white">{{ $this->getTimeSober($sobrietyDate->sobriety_date) }}</span>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                        {{ __('No members found.') }}
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Desktop View -->
+        <div class="hidden sm:block overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 dark:bg-zinc-700">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                             wire:click="sortBy('name')">
                             {{ __('Name') }}
                             @if($sortBy === 'name')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                        <th class="hidden md:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                             wire:click="sortBy('email')">
                             {{ __('Email') }}
                             @if($sortBy === 'email')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                             wire:click="sortBy('sobriety_date')">
                             {{ __('Sobriety Date') }}
                             @if($sortBy === 'sobriety_date')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <th class="hidden lg:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             {{ __('Time Sober') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             {{ __('Status') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             {{ __('Actions') }}
                         </th>
                     </tr>
@@ -100,22 +152,22 @@
                             $daysUntilAnniversary = $nextAnniversary ? round(now()->diffInDays($nextAnniversary)) : null;
                         @endphp
                         <tr class="hover:bg-gray-50 dark:hover:bg-zinc-700">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
                                     {{ $member->name }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-600 dark:text-gray-300">
                                     {{ $member->email }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $sobrietyDate ? $sobrietyDate->sobriety_date->format('M j, Y') : 'N/A' }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $sobrietyDate ? $sobrietyDate->formattedTimeSober() : 'N/A' }}
                                 </div>
@@ -123,7 +175,7 @@
                                     {{ $sobrietyDate ? number_format($sobrietyDate->daysSober()) . ' days' : '' }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                 @if($member->disabled ?? false)
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
                                         {{ __('Disabled') }}
@@ -134,7 +186,7 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <flux:button
                                     wire:click="openEditModal({{ $member->id }})"
                                     variant="ghost"
@@ -146,7 +198,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
+                            <td colspan="6" class="px-4 lg:px-6 py-12 text-center">
                                 <div class="text-gray-500 dark:text-gray-400">
                                     @if($search)
                                         {{ __('No members found matching your search.') }}
@@ -160,14 +212,14 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination -->
-        @if($members->hasPages())
-            <div class="bg-white dark:bg-zinc-800 px-4 py-3 border-t border-gray-200 dark:border-zinc-700">
-                {{ $members->links() }}
-            </div>
-        @endif
     </div>
+
+    <!-- Pagination -->
+    @if($members->hasPages())
+        <div class="bg-white dark:bg-zinc-800 px-4 py-3 border border-gray-200 dark:border-zinc-700 rounded-lg">
+            {{ $members->links() }}
+        </div>
+    @endif
 
     <!-- Summary Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

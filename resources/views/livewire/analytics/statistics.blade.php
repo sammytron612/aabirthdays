@@ -5,39 +5,39 @@
     }
 })">
     <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Analytics & Statistics</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Analytics & Statistics</h1>
         <p class="text-gray-600 dark:text-gray-300 mt-2">Comprehensive insights into member sobriety journey data</p>
     </div>
 
     <!-- Sobriety Dates by Month Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Sobriety Dates by Month</h2>
-        <div class="h-80">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Sobriety Dates by Month</h2>
+        <div class="h-64 sm:h-80">
             <canvas id="sobrietyDatesChart" width="400" height="200"></canvas>
         </div>
     </div>
 
     <!-- Longest Sobriety Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Longest Sobriety (Top 10)</h2>
-        <div class="h-80">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Longest Sobriety (Top 10)</h2>
+        <div class="h-64 sm:h-80">
             <canvas id="sobrietyChart" width="400" height="200"></canvas>
         </div>
     </div>
 
     <!-- Members with Multiple Sobriety Dates (Relapses) Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Members with Multiple Sobriety Dates</h2>
-        <div class="h-80">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Members with Multiple Sobriety Dates</h2>
+        <div class="h-64 sm:h-80">
             <canvas id="relapsesChart" width="400" height="200"></canvas>
         </div>
     </div>
 
     <!-- Sobriety Date Distribution Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Relapse Distribution</h2>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Relapse Distribution</h2>
         <p class="text-gray-600 dark:text-gray-300 mb-4">Percentage of members with single vs multiple sobriety dates</p>
-        <div class="h-80">
+        <div class="h-64 sm:h-80">
             <canvas id="distributionChart" width="400" height="200"></canvas>
         </div>
     </div>
