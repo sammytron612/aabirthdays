@@ -5,6 +5,7 @@ namespace App\Livewire\Communication;
 use App\Models\Member;
 use App\Models\SobrietyDate;
 use App\Models\User;
+use App\Mail\BirthdayEmail;
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -318,29 +319,46 @@ class Email extends Component
 
         $this->validate($rules, $messages);
 
-        // Get admin users as primary recipients (TO)
-        $adminUsers = User::all();
+        // Get admin users as primary recipients (TO) - exclude disabled users
+        $adminUsers = User::where('role', '!=', \App\Enums\UserRole::Disabled)->get();
 
-        // Get all members for BCC only
-        $allMembers = Member::all();
-        $bccEmails = $allMembers->pluck('email')->toArray();
+        // Get all members for BCC only - filter out disabled members and test/example emails
+        $allMembers = Member::where('disabled', false)->get();
+        $bccEmails = $allMembers->pluck('email')
+            ->filter()
+            ->filter(function($email) {
+                // Only include real email addresses, exclude test/example domains
+                return !str_contains($email, 'example.com') &&
+                       !str_contains($email, 'test.com') &&
+                       filter_var($email, FILTER_VALIDATE_EMAIL);
+            })
+            ->toArray();
 
-        try {
-            // Send email TO admin users, BCC all members
-            // Mail::to($adminUsers->pluck('email')->toArray())
-            //     ->bcc($bccEmails)
-            //     ->send(new AnniversaryEmail($this->subject, $this->message));
-
-            // For now, simulate sending
-
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to send email: ' . $e->getMessage());
+        // Ensure we have at least one recipient
+        if ($adminUsers->isEmpty()) {
+            session()->flash('error', 'No active admin users found to send email to.');
             return;
         }
 
-        $successMessage = 'Email sent successfully! ';
-        $successMessage .= 'TO: ' . count($adminUsers) . ' admin(s), ';
-        $successMessage .= 'BCC: ' . count($bccEmails) . ' member(s)';
+        try {
+            // Queue email TO admin users, BCC all members (if any)
+            $mail = Mail::to($adminUsers->pluck('email')->toArray());
+
+            if (!empty($bccEmails)) {
+                $mail->bcc($bccEmails);
+            }
+
+            $mail->queue(new BirthdayEmail($this->subject, $this->message));
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to queue email: ' . $e->getMessage());
+            return;
+        }
+
+        $successMessage = 'Email queued successfully! ';
+        $successMessage .= 'TO: ' . count($adminUsers) . ' active admin(s), ';
+        $successMessage .= 'BCC: ' . count($bccEmails) . ' active member(s)';
+        $successMessage .= ' (Disabled users/members excluded)';
 
         session()->flash('success', $successMessage);        // Reset form
         $this->reset(['subject', 'message', 'selectedMembers', 'selectAll', 'showPreview']);
