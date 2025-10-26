@@ -169,6 +169,7 @@
                           SPECIAL CELEBRATION!
 We will be hosting a celebration party for our members reaching 6-month and yearly milestones!      </label>
                                 <input
+                                    id="party-datetime-input"
                                     type="text"
                                     wire:model.live="partyDateTime"
                                     placeholder="e.g., Sunday, November 30th at 7:30 PM"
@@ -255,7 +256,12 @@ We will be hosting a celebration party for our members reaching 6-month and year
                 <flux:button wire:click="hidePreview" variant="outline" class="order-2 sm:order-1">
                     Edit Email
                 </flux:button>
-                <flux:button wire:click="sendEmail" variant="primary" class="order-1 sm:order-2">
+                <flux:button
+                    wire:click="sendEmail"
+                    variant="primary"
+                    class="order-1 sm:order-2"
+                    onclick="handleSendEmailClick()"
+                >
                     Send Email
                 </flux:button>
             </div>
@@ -433,3 +439,22 @@ We will be hosting a celebration party for our members reaching 6-month and year
         </div>
     @endif
 </div>
+
+<script>
+function handleSendEmailClick() {
+    // Check if the birthday celebration is enabled by looking for the party datetime input
+    const partyDateTimeInput = document.getElementById('party-datetime-input');
+
+    if (partyDateTimeInput && partyDateTimeInput.offsetParent !== null) {
+        // The input is visible, scroll to it
+        partyDateTimeInput.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+        // Focus on the input to make it more obvious
+        setTimeout(() => {
+            partyDateTimeInput.focus();
+        }, 500);
+    }
+}
+</script>

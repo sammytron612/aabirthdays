@@ -60,7 +60,10 @@
                 </flux:button>
                 @if($showReport && !empty($reportData))
                     <flux:button wire:click="downloadReport" variant="outline" class="w-full sm:w-auto">
-                        📥 Download CSV
+                        Download CSV
+                    </flux:button>
+                    <flux:button wire:click="emailReport" variant="outline" class="w-full sm:w-auto">
+                        Email Report
                     </flux:button>
                 @endif
             </div>
@@ -68,7 +71,17 @@
             <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <div class="flex items-center">
                     <div class="text-red-800 dark:text-red-200">
-                        ⚠️ {{ session('error') }}
+                        {{ session('error') }}
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if (session()->has('success'))
+            <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div class="flex items-center">
+                    <div class="text-green-800 dark:text-green-200">
+                        {{ session('success') }}
                     </div>
                 </div>
             </div>
