@@ -25,7 +25,7 @@
         </div>
     @endif
 
-    @if (!$showPreview)
+    @if (!$showPreview && !$showComposer)
         <!-- Quick Templates Section -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
             <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Quick Templates</h2>
@@ -48,6 +48,71 @@
                     <div class="text-2xl mb-2"></div>
                     <div class="text-sm font-medium text-gray-900 dark:text-white">Template 3</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Coming Soon</div>
+                </div>
+            </div>
+        </div>
+    @elseif ($showComposer && !$showPreview)
+        <!-- Email Composer -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Compose Email</h2>
+                <flux:button wire:click="$set('showComposer', false)" variant="outline" class="w-full sm:w-auto">
+                    ← Back to Templates
+                </flux:button>
+            </div>
+
+            <!-- Email Form -->
+            <div class="space-y-6">
+                <!-- Subject -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Subject *
+                    </label>
+                    <input
+                        type="text"
+                        wire:model.live="subject"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('subject') border-red-500 @enderror"
+                        placeholder="Enter email subject"
+                    >
+                    @error('subject')
+                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Message -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Message *
+                    </label>
+                    <textarea
+                        wire:model.live="message"
+                        rows="10"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('message') border-red-500 @enderror"
+                        placeholder="Enter your message content here..."
+                    ></textarea>
+                    @error('message')
+                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Recipients Info -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Recipients</h4>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        <div><strong>TO:</strong> Admin users ({{ \App\Models\User::count() }} users)</div>
+                        <div><strong>BCC:</strong> All active members ({{ \App\Models\Member::where('disabled', false)->count() }} members)</div>
+                        <div class="text-xs mt-1">Disabled users/members are automatically excluded</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row justify-end gap-3">
+                    <flux:button wire:click="$set('showComposer', false)" variant="outline" class="order-2 sm:order-1">
+                        Cancel
+                    </flux:button>
+                    <flux:button wire:click="$set('showPreview', true)" variant="primary" class="order-1 sm:order-2">
+                        Preview Email
+                    </flux:button>
                 </div>
             </div>
         </div>
@@ -119,7 +184,7 @@ We will be hosting a celebration party for our members reaching 6-month and year
                 @endif
 
                 <!-- Custom Message Editor (only show for custom messages) -->
-                @if(strpos($subject, 'Message from AA') !== false)
+                @if(strpos($subject, 'Message from Lifeboat') !== false)
                     <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
                         <div class="flex items-center mb-3">
                             <span class="text-blue-800 dark:text-blue-200 font-medium">Edit Your Message</span>

@@ -17,6 +17,7 @@ class Email extends Component
     public $selectedMembers = [];
     public $selectAll = false;
     public $showPreview = false;
+    public $showComposer = false;
     public $showAnniversariesModal = false;
     public $showCustomMessageModal = false;
     public $partyDateTime = '';
@@ -77,9 +78,10 @@ class Email extends Component
         $this->selectedMembers = User::pluck('id')->toArray();
         $this->selectAll = false;
 
-        // Close modal and show preview
+        // Close modal and show composer
         $this->showCustomMessageModal = false;
-        $this->showPreview = true;
+        $this->showComposer = true;
+        $this->showPreview = false;
     }
 
     public function getAnniversariesData()
@@ -291,6 +293,10 @@ class Email extends Component
     public function hidePreview()
     {
         $this->showPreview = false;
+        // If we have content (subject/message), show composer, otherwise show templates
+        if (!empty($this->subject) || !empty($this->message)) {
+            $this->showComposer = true;
+        }
     }
 
     public function sendEmail()

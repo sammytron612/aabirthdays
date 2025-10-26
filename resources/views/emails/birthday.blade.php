@@ -65,8 +65,10 @@
         </div>
 
         <div class="footer">
-            <p><strong>Regards,</strong><br>
-            {{ $secretaryName ?? 'Birthday Secretary' }}</p>
+            @if(stripos($emailSubject, 'Monthly Anniversary Celebrations') !== false)
+                <p><strong>Regards,</strong><br>
+                {{ $secretaryName ?? 'Birthday Secretary' }}</p>
+            @endif
             <p><small>This is an automated message. Please do not reply to this email.</small></p>
         </div>
     </div>
