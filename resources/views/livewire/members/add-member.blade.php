@@ -37,6 +37,7 @@
                         wire:model="sobriety_date"
                         :label="__('Sobriety Date')"
                         type="date"
+                        max="{{ date('Y-m-d') }}"
                         required
                     />
                     @error('sobriety_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
@@ -78,6 +79,7 @@
                             <input
                                 type="date"
                                 wire:model="newSobrietyDate"
+                                max="{{ date('Y-m-d') }}"
                                 placeholder="{{ __('Select new sobriety date') }}"
                                 class="flex-1 rounded-md border-gray-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             />

@@ -49,7 +49,7 @@ class AddMember extends Component
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:members,email,' . $this->editingId,
-            'sobriety_date' => 'required|date',
+            'sobriety_date' => 'required|date|before_or_equal:today',
         ]);
 
         if ($this->editingId) {
@@ -127,6 +127,11 @@ class AddMember extends Component
     public function addSobrietyDate()
     {
         if (!empty($this->newSobrietyDate)) {
+            // Validate the new sobriety date
+            $this->validate([
+                'newSobrietyDate' => 'required|date|before_or_equal:today',
+            ]);
+
             // Add to the array for display
             $this->sobrietyDates[] = [
                 'id' => null, // Will be null for new dates

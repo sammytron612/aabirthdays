@@ -260,12 +260,60 @@
     <!-- Edit Member Modal -->
     @if($showEditModal)
         <style>
-            @keyframes blink {
-                0%, 50% { opacity: 1; background-color: rgb(59 130 246); transform: scale(1.05); }
-                25%, 75% { opacity: 0.3; background-color: rgb(239 68 68); transform: scale(1.1); }
+            @keyframes moveArrow {
+                0% {
+                    transform: translateX(-15px);
+                    opacity: 0.3;
+                }
+                25% {
+                    transform: translateX(-8px);
+                    opacity: 0.6;
+                }
+                50% {
+                    transform: translateX(0px);
+                    opacity: 1;
+                }
+                75% {
+                    transform: translateX(-8px);
+                    opacity: 0.6;
+                }
+                100% {
+                    transform: translateX(-15px);
+                    opacity: 0.3;
+                }
             }
-            .blink-animation {
-                animation: blink 0.3s ease-in-out infinite;
+
+            @keyframes blinkButton {
+                0%, 50% {
+                    background-color: rgb(59 130 246);
+                    transform: scale(1);
+                }
+                25%, 75% {
+                    background-color: rgb(16 185 129);
+                    transform: scale(1.05);
+                }
+            }
+
+            .arrow-pointer {
+                animation: moveArrow 1.5s ease-in-out infinite;
+                display: inline-block;
+            }
+
+            .blink-add-button {
+                animation: blinkButton 1s ease-in-out infinite;
+            }
+
+            /* Disable any blinking/pulsing animations on the save button */
+            .save-button {
+                animation: none !important;
+            }
+
+            .save-button:hover {
+                animation: none !important;
+            }
+
+            .save-button:focus {
+                animation: none !important;
             }
         </style>
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
@@ -285,24 +333,60 @@
                 </div>
 
                 <!-- Modal Content - Scrollable -->
-                <div class="flex-1 overflow-y-auto" x-data="{
-                    scrollToBottom() { this.$el.scrollTop = this.$el.scrollHeight; },
-                    blinkSaveButton() {
+                <div class="flex-1 overflow-y-auto"
+                     id="modal-content"
+                     x-data="{
+                    showArrow: false,
+                    blinkAddButton: false,
+                    scrollToBottom() {
+                        // Use a more reliable scroll method
                         const saveButton = document.querySelector('#save-button');
                         if (saveButton) {
-                            saveButton.classList.add('blink-animation');
-                            setTimeout(() => {
-                                saveButton.classList.remove('blink-animation');
-                            }, 3000);
+                            saveButton.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'nearest'
+                            });
+                        } else {
+                            this.$el.scrollTo({
+                                top: this.$el.scrollHeight,
+                                behavior: 'smooth'
+                            });
                         }
+                    },
+                    handleFieldChange() {
+                        this.showArrow = true;
+                        setTimeout(() => {
+                            this.scrollToBottom();
+                        }, 100);
+                    },
+                    handleDateChange() {
+                        this.showArrow = true;
+                        setTimeout(() => {
+                            this.scrollToBottom();
+                        }, 100);
+                    },
+                    handleNewDateInput() {
+                        this.blinkAddButton = true;
+                    },
+                    stopBlinking() {
+                        this.blinkAddButton = false;
                     }
                 }" x-init="$wire.on('sobriety-date-added', () => {
+                    showArrow = true;
+                    blinkAddButton = false;
                     setTimeout(() => {
                         scrollToBottom();
-                        blinkSaveButton();
+                    }, 50);
+                }); $wire.on('sobriety-date-removed', () => {
+                    showArrow = true;
+                    setTimeout(() => {
+                        scrollToBottom();
                     }, 50);
                 })">>
-                    <form wire:submit.prevent="saveEditedMember" class="flex flex-col h-full">
+                    <form wire:submit.prevent="saveEditedMember" class="flex flex-col h-full"
+                          x-on:input.debounce.300ms="handleFieldChange()"
+                          x-on:change="handleFieldChange()"
+                    >
                         <div class="p-6 space-y-4 flex-1">
                             <!-- Name -->
                             <div>
@@ -388,12 +472,15 @@
                                         wire:model="newSobrietyDate"
                                         placeholder="{{ __('Select new sobriety date') }}"
                                         class="flex-1 rounded-md border-gray-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        x-on:change="handleNewDateInput()"
                                     />
                                     <flux:button
                                         wire:click="addSobrietyDate"
                                         variant="primary"
                                         size="sm"
                                         type="button"
+                                        x-bind:class="{ 'blink-add-button': blinkAddButton }"
+                                        x-on:click="stopBlinking()"
                                     >
                                         {{ __('Add Date') }}
                                     </flux:button>
@@ -415,13 +502,22 @@
                                 >
                                     {{ __('Cancel') }}
                                 </flux:button>
-                                <flux:button
-                                    id="save-button"
-                                    type="submit"
-                                    variant="primary"
-                                >
-                                    {{ __('Save Changes') }}
-                                </flux:button>
+
+                                <div class="flex items-center gap-3">
+                                    <!-- Animated Arrow - Only show when form has changes -->
+                                    <div class="arrow-pointer" x-show="showArrow">
+                                        <span class="text-blue-600 dark:text-blue-400 font-bold text-2xl">➤</span>
+                                    </div>
+
+                                    <flux:button
+                                        id="save-button"
+                                        type="submit"
+                                        variant="primary"
+                                        class="save-button"
+                                    >
+                                        {{ __('Save Changes') }}
+                                    </flux:button>
+                                </div>
                             </div>
                         </div>
                     </form>
